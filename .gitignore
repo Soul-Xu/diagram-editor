@@ -1,0 +1,8 @@
+# 忽略依赖安装包
+node_modules
+
+# 忽略打包文件
+/dist
+
+# 忽略其他文件
+.DS_Store
