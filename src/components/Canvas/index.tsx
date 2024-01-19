@@ -1,6 +1,6 @@
 // components/Canvas.tsx
 import React from 'react';
-import GraphEditor, { GraphEditorRef } from '../GraphEditor/index';
+import GraphEditor, { GraphEditorRef } from '../GraphEditor/joint';
 
 interface CanvasProps {
   showGrid: boolean;
@@ -21,9 +21,9 @@ const Canvas: React.FC<CanvasProps> = ({ showGrid, graphEditorRef }) => {
 
   const handleInsertLink = () => {
     // 在这里调用 createLink
-    if (graphEditorRef.current) {
-      graphEditorRef.current.createLink('sourceNodeId', 'targetNodeId');
-    }
+    // if (graphEditorRef.current) {
+    //   graphEditorRef.current.createLink('sourceNodeId', 'targetNodeId');
+    // }
   };
 
   return (

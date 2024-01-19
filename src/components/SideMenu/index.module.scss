@@ -12,7 +12,11 @@
   }
 
   .content-item-list {
+    display: flex;
+    flex-wrap: wrap;
+
     .list-item {
+      margin-right: 10px;
       width: 24px;
       height: 24px;
       display: flex;

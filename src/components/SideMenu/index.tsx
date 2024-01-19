@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, Layout, Input, Row, Divider, Tooltip } from 'antd';
-import { AppstoreOutlined, SettingOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, SettingOutlined, AccountBookOutlined, BookOutlined, CiCircleOutlined, CommentOutlined } from '@ant-design/icons';
 import { v4 as uuidv4 } from 'uuid'; // 引入uuid
 // @ts-ignore
 import styles from "./index.module.scss";
@@ -70,6 +70,42 @@ const SideMenu: React.FC = () => {
                 style={{ cursor: 'grab' }} // 初始光标样式
               >
                 <AppstoreOutlined style={{ fontSize: '20px' }} />
+              </div>
+              <div
+                className={classNames("list-item")}
+                draggable
+                onDragStart={(e) => handleDragStart(e, 'AccountBookOutlined')}
+                onDragEnd={handleDragEnd}
+                style={{ cursor: 'grab' }} // 初始光标样式
+              >
+                <AccountBookOutlined style={{ fontSize: '20px' }}/>
+              </div>
+              <div
+                className={classNames("list-item")}
+                draggable
+                onDragStart={(e) => handleDragStart(e, 'BookOutlined')}
+                onDragEnd={handleDragEnd}
+                style={{ cursor: 'grab' }} // 初始光标样式
+              >
+                <BookOutlined style={{ fontSize: '20px' }} />
+              </div>
+              <div
+                className={classNames("list-item")}
+                draggable
+                onDragStart={(e) => handleDragStart(e, 'CiCircleOutlined')}
+                onDragEnd={handleDragEnd}
+                style={{ cursor: 'grab' }} // 初始光标样式
+              >
+                <CiCircleOutlined style={{ fontSize: '20px' }} />
+              </div>
+              <div
+                className={classNames("list-item")}
+                draggable
+                onDragStart={(e) => handleDragStart(e, 'CommentOutlined')}
+                onDragEnd={handleDragEnd}
+                style={{ cursor: 'grab' }} // 初始光标样式
+              >
+                <CommentOutlined style={{ fontSize: '20px' }} />
               </div>
             </div>
           </div>
