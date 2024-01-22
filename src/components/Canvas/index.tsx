@@ -1,6 +1,6 @@
 // components/Canvas.tsx
 import React from 'react';
-import GraphEditor, { GraphEditorRef } from '../GraphEditor/joint';
+import GraphEditor, { GraphEditorRef } from '../GraphEditor';
 
 interface CanvasProps {
   showGrid: boolean;
@@ -30,7 +30,7 @@ const Canvas: React.FC<CanvasProps> = ({ showGrid, graphEditorRef }) => {
     <div
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
-      style={{ border: '1px solid #e8e8e8', width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}
+      style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}
     >
       {/* 传递 graphEditorRef 到 GraphEditor 组件 */}
       <GraphEditor ref={graphEditorRef} showGrid={showGrid} onInsertLink={handleInsertLink} />

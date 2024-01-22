@@ -48,7 +48,7 @@ const SideMenu: React.FC = () => {
         </Menu>
         <Divider />
       </Sider>
-      <div style={{ display: selectedMenuItem ? 'block' : 'none', minWidth: "200px", zIndex: "999999", background: "#fff", padding: "10px" }}>
+      <div style={{ display: selectedMenuItem ? 'block' : 'none', minWidth: "200px", zIndex: "9", background: "#fff", padding: "10px" }}>
         {selectedMenuItem === 'icon' && (
           <div>
             <Row style={{ marginBottom: "10px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>

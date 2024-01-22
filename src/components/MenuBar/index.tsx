@@ -1,90 +1,62 @@
-// components/MenuBar.tsx
-import React, { useState } from 'react';
-import { Button, Divider, Tooltip, Switch } from 'antd';
-import { SaveOutlined, UndoOutlined, RedoOutlined, PlusOutlined, FileAddOutlined, FileImageOutlined, LinkOutlined } from '@ant-design/icons';
-import { GraphEditorRef } from '../GraphEditor';
+// src/components/MenuBar.js
+import React from 'react';
+import { Button, Space, Dropdown, Menu } from 'antd';
 
-interface MenuBarProps {
-  setShowGrid: React.Dispatch<React.SetStateAction<boolean>>;
-  onInsertLink: () => void;
-  graphEditorRef: React.RefObject<GraphEditorRef | null>;
-}
-
-const MenuBar: React.FC<MenuBarProps> = ({ setShowGrid, onInsertLink, graphEditorRef }) => {
-  const [gridEnabled, setGridEnabled] = useState(true);
-
-  const buttonStyle = { marginRight: '0' };
-
-  const handleSave = () => {
-    console.log('保存');
+const MenuBar = () => {
+  const handleFileMenuClick = ({ key }) => {
+    // 处理文件操作
+    console.log('File menu action:', key);
   };
 
-  const handleUndo = () => {
-    console.log('撤销');
+  const handleInsertMenuClick = ({ key }) => {
+    console.log('Insert menu action:', key);
   };
 
-  const handleRedo = () => {
-    console.log('重做');
+  const handleSettingMenuClick = ({ key }) => {
+    console.log('Setting menu action:', key);
   };
 
-  const handleNewElement = () => {
-    console.log('新建图形元素');
-  };
+  const fileMenu = (
+    <Menu onClick={handleFileMenuClick}>
+      <Menu.Item key="new">新建</Menu.Item>
+      <Menu.Item key="open">打开</Menu.Item>
+      <Menu.Item key="save">保存</Menu.Item>
+    </Menu>
+  );
 
-  const handleInsertText = () => {
-    console.log('插入文字');
-  };
+  const insertMenu = (
+    <Menu onClick={handleInsertMenuClick}>
+      <Menu.Item key="grid">插入网格</Menu.Item>
+      <Menu.Item key="canvas">插入画布</Menu.Item>
+    </Menu>
+  );
 
-  const handleInsertImage = () => {
-    console.log('插入图片');
-  };
-
-  const handleInsertLink = () => {
-    console.log("menu-handleInsertLink", graphEditorRef.current)
-    // 处理插入连线逻辑
-    if (graphEditorRef.current) {
-      graphEditorRef.current.createLink('sourceNodeId', 'targetNodeId');
-    }
-  };
-
-  const handleGridSwitch = (checked: boolean) => {
-    setGridEnabled(checked);
-    setShowGrid(checked);
-  };
+  const settingMenu = (
+    <Menu onClick={handleSettingMenuClick}>
+      <Menu.Item key="grid">显示网格</Menu.Item>
+      <Menu.Item key="background">背景颜色</Menu.Item>
+      <Menu.Item key="icon">图标尺寸</Menu.Item>
+    </Menu>
+  );
 
   return (
-    <div>
-      <Tooltip title="新建图形元素">
-        <Button icon={<PlusOutlined />} type='text' onClick={handleNewElement} style={buttonStyle} className="icon-button" />
-      </Tooltip>
-      <Divider type="vertical" />
-      <Tooltip title="保存">
-        <Button icon={<SaveOutlined />} type='text' onClick={handleSave} style={buttonStyle} className="icon-button" />
-      </Tooltip>
-      <Divider type="vertical" />
-      <Tooltip title="撤销">
-        <Button icon={<UndoOutlined />} type='text' onClick={handleUndo} style={buttonStyle} className="icon-button" />
-      </Tooltip>
-      <Divider type="vertical" />
-      <Tooltip title="重做">
-        <Button icon={<RedoOutlined />} type='text' onClick={handleRedo} style={buttonStyle} className="icon-button" />
-      </Tooltip>
-      <Divider type="vertical" />
-      <Tooltip title="插入文字">
-        <Button icon={<FileAddOutlined />} type='text' onClick={handleInsertText} style={buttonStyle} className="icon-button" />
-      </Tooltip>
-      <Divider type="vertical" />
-      <Tooltip title="插入图片">
-        <Button icon={<FileImageOutlined />} type='text' onClick={handleInsertImage} style={buttonStyle} className="icon-button" />
-      </Tooltip>
-      <Divider type="vertical" />
-      <Tooltip title="插入连线">
-        <Button icon={<LinkOutlined />} type='text' onClick={handleInsertLink} style={buttonStyle} className="icon-button" />
-      </Tooltip>
-      <Divider type="vertical" />
-      <span style={{ marginRight: 8 }}>显示网格</span>
-      <Switch checked={gridEnabled} onChange={handleGridSwitch} />
-    </div>
+    <Space>
+      <Dropdown overlay={fileMenu} placement="bottomCenter">
+        <Button type="text">
+          文件
+        </Button>
+      </Dropdown>
+      <Dropdown overlay={insertMenu} placement="bottomCenter">
+        <Button type="text">
+          插入
+        </Button>
+      </Dropdown>
+      <Dropdown overlay={settingMenu} placement="bottomCenter">
+        <Button type="text">
+          设置
+        </Button>
+      </Dropdown>
+    </Space>
   );
 };
 

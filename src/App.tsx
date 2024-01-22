@@ -19,10 +19,10 @@ const App = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ backgroundColor: "#fff", height: "40px", lineHeight: "40px" }}>
-        <Toolbar />
+        <MenuBar />
       </Header>
       <div style={{ height: "30px", lineHeight: "30px", borderBottom: "1px solid #eee", padding: "0 50px" }}>
-        <MenuBar setShowGrid={setShowGrid} onInsertLink={() => {}} graphEditorRef={graphEditorRef} />
+        <Toolbar setShowGrid={setShowGrid} onInsertLink={() => {}} graphEditorRef={graphEditorRef} />
       </div>
       <Layout style={{ display: "flex" }}>
         <SideMenu />
