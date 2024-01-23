@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button, Divider, Tooltip, Switch } from 'antd';
 import { SaveOutlined, UndoOutlined, RedoOutlined, PlusOutlined, FileAddOutlined, FileImageOutlined, LinkOutlined } from '@ant-design/icons';
-import { GraphEditorRef } from '../GraphEditor';
+import { GraphEditorRef } from '../GraphEditor/mxgraph';
 import { ColorPicker } from 'antd';
 // @ts-ignore
 import styles from "./index.module.scss";
@@ -71,3 +71,4 @@ const ToolBar: React.FC<ToolBarProps> = ({ setShowGrid, onInsertLink, graphEdito
 };
 
 export default ToolBar;
+

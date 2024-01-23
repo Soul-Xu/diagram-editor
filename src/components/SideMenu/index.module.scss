@@ -17,11 +17,24 @@
 
     .list-item {
       margin-right: 10px;
+      margin-bottom: 10px;
       width: 24px;
       height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: grab
+    }
+
+    .list-item:last-child {
+      margin-right: 0;
+      margin-bottom: 10px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab
     }
   }
 }

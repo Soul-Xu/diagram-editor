@@ -5,6 +5,7 @@ import MenuBar from './components/MenuBar/index.tsx';
 // @ts-ignore
 import SideMenu from './components/SideMenu/index.tsx';
 import Canvas from './components/Canvas/index.tsx';
+import GraphEditor from './components/GraphEditor/jointjs.tsx'; // 导入 mxGraph 的 GraphEditor 组件
 import PropertyPanel from './components/PropertyPanel/index.tsx';
 
 const { Header, Content, Sider } = Layout;

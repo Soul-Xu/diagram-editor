@@ -3,7 +3,6 @@ import * as joint from 'jointjs';
 import { v4 as uuidv4 } from 'uuid';
 import { useSelector } from 'react-redux';
 
-// Add more colors if needed
 const COLORS = {
   grid: "#a1bbce",
   link: "#FF620C",
@@ -23,12 +22,8 @@ const GraphEditor: React.ForwardRefRenderFunction<GraphEditorRef, GraphEditorPro
   const linkColor = useSelector((state: any) => state.graphEditor.linkColor)
 
   useEffect(() => {
-    console.log("linkColor", linkColor)
-  }, [linkColor])
-
-  useEffect(() => {
     if (graphContainerRef.current) {
-      const graph = new joint.dia.Graph();
+      const graph:any = new joint.dia.Graph();
       const paper = new joint.dia.Paper({
         el: graphContainerRef.current,
         model: graph,
@@ -44,7 +39,6 @@ const GraphEditor: React.ForwardRefRenderFunction<GraphEditorRef, GraphEditorPro
       paper.on('cell:pointerup', (cellView: joint.dia.CellView | any) => {
         if (cellView.model.isElement()) {
           const newNode: any = cellView.model as joint.shapes.standard.Rectangle;
-          // Check for proximity to other nodes and create links
           nodes.forEach((node: any) => {
             if (node !== newNode && newNode.position().distance(node.position()) < 60) {
               createLink(newNode.id, node.id);
@@ -63,7 +57,7 @@ const GraphEditor: React.ForwardRefRenderFunction<GraphEditorRef, GraphEditorPro
           const nodeId = uuidv4();
           rect.set('id', nodeId);
           rect.position(x, y);
-          const rectWidth = iconType.length * 10 + 20; // Adjusted width based on iconType
+          const rectWidth = iconType.length * 10 + 20;
           rect.resize(rectWidth, 60);
           rect.attr({
             body: { fill: 'lightblue' },
@@ -79,7 +73,6 @@ const GraphEditor: React.ForwardRefRenderFunction<GraphEditorRef, GraphEditorPro
 
   useEffect(() => {
     let firstSelectedRectId: string | null | any = null;
-  
     const paper: any = paperRef.current;
   
     if (paper) {
@@ -88,39 +81,36 @@ const GraphEditor: React.ForwardRefRenderFunction<GraphEditorRef, GraphEditorPro
           const selectedRect = cellView.model as joint.shapes.standard.Rectangle;
   
           if (firstSelectedRectId === null) {
-            // 第一次点击，记录第一个节点的 ID
             firstSelectedRectId = selectedRect.id;
             console.log('Selected Cell (first):', selectedRect);
           } else {
-            // 第二次点击，记录第二个节点的 ID，然后创建连接
             const secondSelectedRectId: any = selectedRect.id;
             console.log('Selected Cell (second):', selectedRect);
   
-             // 创建连接
             createLink(firstSelectedRectId, secondSelectedRectId);
-  
-            // 清除记录的两个 ID
             firstSelectedRectId = null;
           }
         }
       });
-  
-      // 移除 createLink 作为依赖
+
       return () => {
         paper.off('cell:pointerclick');
       };
     }
   }, []);  // 移除 createLink 作为依赖
-  
+
   const createLink = (sourceId: string, targetId: string) => {
     const link: any = new joint.shapes.standard.Link();
     const linkId = uuidv4();
 
     link.set('id', linkId);
+    link.set('smooth', true)
+    // link.connector('straight');
     link.attr({
       line: {
         stroke: linkColor,
         strokeWidth: 1.5,
+        cursor: 'grab', // 设置连接线的光标样式为手势
       },
       targetMarker: {
         type: 'path',
@@ -139,6 +129,16 @@ const GraphEditor: React.ForwardRefRenderFunction<GraphEditorRef, GraphEditorPro
 
       graphRef.current?.addCell(link);
 
+      const linkView: any = paperRef.current?.findViewByModel(link);
+      if (linkView) {
+        const lineElement = linkView.el.querySelector('line');
+        console.log("lineElement", lineElement)
+        if (lineElement) {
+          // console.log("lineElement", lineElement)
+          lineElement.style.cursor = 'grab';
+        }
+      }
+
       onInsertLink(linkId, sourceId, targetId);
     }
   };
@@ -151,4 +151,5 @@ export default forwardRef(GraphEditor);
 export interface GraphEditorRef {
   addNode: (iconType: string, x: number, y: number) => void;
 }
+
 

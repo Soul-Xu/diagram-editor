@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Menu, Layout, Input, Row, Divider, Tooltip } from 'antd';
-import { AppstoreOutlined, SettingOutlined, AccountBookOutlined, BookOutlined, CiCircleOutlined, CommentOutlined } from '@ant-design/icons';
-import { v4 as uuidv4 } from 'uuid'; // 引入uuid
-// @ts-ignore
+import { Menu, Layout, Input, Row, Divider, Tooltip, Collapse } from 'antd';
+import { AppstoreOutlined, SettingOutlined } from '@ant-design/icons';
+import { v4 as uuidv4 } from 'uuid';
+import { SIDEBAR_BASIC_SHAPES } from './constants'
 import styles from "./index.module.scss";
 import classnames from "classnames/bind";
 const classNames = classnames.bind(styles);
 
 const { Sider } = Layout;
+const { Panel } = Collapse;
 
 const SideMenu: React.FC = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useState<string | null>(null);
@@ -20,10 +21,11 @@ const SideMenu: React.FC = () => {
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, iconType: string) => {
-    const iconId = uuidv4();  // 使用uuid生成唯一的ID
-    e.dataTransfer.setData('iconType', iconType);
-    e.dataTransfer.setData('iconId', iconId);  // 将随机生成的ID传递给拖动事件
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, shape: any) => {
+    const iconId = uuidv4();
+    e.dataTransfer.setData('iconId', iconId);
+    e.dataTransfer.setData('iconType', shape.key);
+    e.dataTransfer.setData('iconSvg', shape.svg);
     e.currentTarget.style.cursor = 'grabbing';
   };
 
@@ -62,51 +64,35 @@ const SideMenu: React.FC = () => {
               </div>
             </Row>
             <div className={classNames("content-item-list")}>
-              <div
-                className={classNames("list-item")}
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'AppstoreOutlined')}
-                onDragEnd={handleDragEnd}
-                style={{ cursor: 'grab' }} // 初始光标样式
+              <Collapse
+                bordered={false}
+                defaultActiveKey={['common', 'svg', 'picture', 'card']}
               >
-                <AppstoreOutlined style={{ fontSize: '20px' }} />
-              </div>
-              <div
-                className={classNames("list-item")}
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'AccountBookOutlined')}
-                onDragEnd={handleDragEnd}
-                style={{ cursor: 'grab' }} // 初始光标样式
-              >
-                <AccountBookOutlined style={{ fontSize: '20px' }}/>
-              </div>
-              <div
-                className={classNames("list-item")}
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'BookOutlined')}
-                onDragEnd={handleDragEnd}
-                style={{ cursor: 'grab' }} // 初始光标样式
-              >
-                <BookOutlined style={{ fontSize: '20px' }} />
-              </div>
-              <div
-                className={classNames("list-item")}
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'CiCircleOutlined')}
-                onDragEnd={handleDragEnd}
-                style={{ cursor: 'grab' }} // 初始光标样式
-              >
-                <CiCircleOutlined style={{ fontSize: '20px' }} />
-              </div>
-              <div
-                className={classNames("list-item")}
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'CommentOutlined')}
-                onDragEnd={handleDragEnd}
-                style={{ cursor: 'grab' }} // 初始光标样式
-              >
-                <CommentOutlined style={{ fontSize: '20px' }} />
-              </div>
+                <Panel key="common" header="基本" style={{ width: "202px" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap" }}>
+                    {SIDEBAR_BASIC_SHAPES.map(shape => (
+                      <a
+                        href="#"
+                        key={`panel_a_${shape.key}`}
+                        className={classNames("list-item")}
+                        draggable
+                        onDragStart={(e: any) => handleDragStart(e, shape)}
+                        onDragEnd={handleDragEnd}
+                        style={{ cursor: 'grab', marginRight: "10px", marginBottom: "10px" }}
+                      >
+                        <Tooltip
+                          placement="top"
+                          title={shape.name}
+                          key={`panel_${shape.key}`}
+                          className="tooltip"
+                        >
+                          <span className="iconfont" dangerouslySetInnerHTML={{ __html: shape.iconCode }}></span>
+                        </Tooltip>
+                      </a>
+                    ))}
+                  </div>
+                </Panel>
+              </Collapse>
             </div>
           </div>
         )}
@@ -123,15 +109,35 @@ const SideMenu: React.FC = () => {
               </div>
             </Row>
             <div className={classNames("content-item-list")}>
-              <div
-                className={classNames("list-item")}
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'SettingOutlined')}
-                onDragEnd={handleDragEnd}
-                style={{ cursor: 'grab' }} // 初始光标样式
-              > 
-                <SettingOutlined style={{ fontSize: '20px' }} />
-              </div>
+              <Collapse
+                bordered={false}
+                defaultActiveKey={['common', 'svg', 'picture', 'card']}
+              >
+                <Panel key="common" header="基本" style={{ width: "202px" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap" }}>
+                    {SIDEBAR_BASIC_SHAPES.map(shape => (
+                      <a
+                        href="#"
+                        key={`panel_a_${shape.key}`}
+                        className={classNames("list-item")}
+                        draggable
+                        onDragStart={(e: any) => handleDragStart(e, shape)}
+                        onDragEnd={handleDragEnd}
+                        style={{ cursor: 'grab', marginRight: "10px", marginBottom: "10px" }}
+                      >
+                        <Tooltip
+                          placement="top"
+                          title={shape.name}
+                          key={`panel_${shape.key}`}
+                          className="tooltip"
+                        >
+                          <span className="iconfont" dangerouslySetInnerHTML={{ __html: shape.iconCode }}></span>
+                        </Tooltip>
+                      </a>
+                    ))}
+                  </div>
+                </Panel>
+              </Collapse>
             </div>
           </div>
         )}
@@ -141,3 +147,4 @@ const SideMenu: React.FC = () => {
 };
 
 export default SideMenu;
+
