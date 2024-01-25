@@ -18,7 +18,7 @@ const App = () => {
   const graphEditorRef = useRef<any | null>(null);
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout>
       <Header style={{ backgroundColor: "#fff", height: "40px", lineHeight: "40px" }}>
         <MenuBar />
       </Header>

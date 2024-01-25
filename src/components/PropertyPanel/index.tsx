@@ -26,7 +26,7 @@ const PropertyPanel: React.FC = () => {
 
   return (
     <div className={classNames("container")} style={{ background: '#fff', borderRadius: '4px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', display: showContent ? 'flex' : ""}}>
-      <Sider theme="light" width={60} style={{ borderRight: '1px solid #e8e8e8', width: "60px", height: "100vh", boxSizing: "border-box" }}>
+      <Sider theme="light" width={60} style={{ borderRight: '1px solid #e8e8e8', width: "60px", height: "800px", boxSizing: "border-box" }}>
         <Menu mode="vertical" defaultSelectedKeys={['basic']} style={{ height: '100%', borderRight: 'none' }} onClick={({ key }) => handleMenuClick(key)}>
           <Menu.Item key="basic" icon={<InfoCircleOutlined />} style={{ padding: "0px 8px 0 16px", width: "50px", textAlign: "center" }} />
           <Menu.Item key="details" icon={<EditOutlined />} style={{ padding: "0px 8px 0 16px", width: "50px", textAlign: "center" }} />
@@ -34,7 +34,7 @@ const PropertyPanel: React.FC = () => {
           <Menu.Item key="trend" icon={<LineChartOutlined />} style={{ padding: "0px 8px 0 16px", width: "50px", textAlign: "center" }} />
         </Menu>
       </Sider>
-      <Content style={{ padding: '10px', flex: 1, height: "100vh" }}>
+      <Content style={{ padding: '10px', flex: 1 }}>
         <div>
           {selectedMenuItem === 'basic' && (
             <div>

@@ -203,11 +203,10 @@ const GraphEditor = forwardRef(({ showGrid }, ref) => {
 
       // 重写 resizeVertex 方法
       mxgraph.mxGraph.prototype.resizeVertex = function (vertex, bounds, recurse) {
-        console.log("222222")
         var geo = this.model.getGeometry(vertex);
         var isCircle = geo.style && geo.style.includes('shape=circle;');
         var isSquare = geo.style && geo.style.includes('shape=square;');
-        
+  
         if (isCircle || isSquare) {
           var maxSide = Math.max(bounds.width, bounds.height);
           bounds.width = maxSide;
@@ -215,16 +214,16 @@ const GraphEditor = forwardRef(({ showGrid }, ref) => {
           geo.width = bounds.width;
           geo.height = bounds.height;
         }
-        
+  
         mxgraph.mxGraph.prototype.resizeVertex.apply(this, arguments);
       };
-
+  
       graph.getCellStyle = function (cell) {
         const style = mxgraph.mxGraph.prototype.getCellStyle.apply(this, arguments);
         return style;
       };
     }
-  }, [showGrid, graphRef.current]);
+  }, []);
 
   useEffect(() => {
     if (ref) {
@@ -322,6 +321,10 @@ const GraphEditor = forwardRef(({ showGrid }, ref) => {
             // @ts-ignore
             graphRef.current?.model?.endUpdate();
           }
+
+          // 设置画布高度为固定值
+          const fixedCanvasHeight = 800; // 你想要的固定高度
+          graphContainerRef.current.style.height = `${fixedCanvasHeight}px`;
         },
       };
     }
