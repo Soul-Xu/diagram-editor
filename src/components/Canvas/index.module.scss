@@ -1,0 +1,18 @@
+.container {
+  background-image: url(("../../static/images/grid.webp"));
+  background-position: 50%, 50%;
+  // background-size: cover;
+  background-repeat: repeat;
+  width: 800px;
+  height: 100vh;
+}
+
+.container-without {
+  background: none;
+  width: 600px;
+  height: 600px;
+}
+
+.container:not(.container-without) {
+  background-image: url("../../static/images/grid.webp");
+}

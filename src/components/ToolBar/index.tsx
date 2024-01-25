@@ -1,5 +1,6 @@
 // components/ToolBar.tsx
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, Divider, Tooltip, Switch } from 'antd';
 import { SaveOutlined, UndoOutlined, RedoOutlined, PlusOutlined, FileAddOutlined, FileImageOutlined, LinkOutlined } from '@ant-design/icons';
 import { GraphEditorRef } from '../GraphEditor/mxgraph';
@@ -8,7 +9,7 @@ import { ColorPicker } from 'antd';
 import styles from "./index.module.scss";
 import classnames from "classnames/bind";
 import { setLinkColor } from '../../redux/models/graphEditorSlice';
-import { useDispatch } from 'react-redux';
+import { setGridLayout } from '../../redux/models/gridEditorSlice';
 const classNames = classnames.bind(styles);
 
 interface ToolBarProps {
@@ -40,8 +41,8 @@ const ToolBar: React.FC<ToolBarProps> = ({ setShowGrid, onInsertLink, graphEdito
   }
 
   const handleGridSwitch = (checked: boolean) => {
-    setGridEnabled(checked);
-    setShowGrid(checked);
+    setGridEnabled(checked)
+    dispatch(setGridLayout(checked))
   };
 
   return (
@@ -64,8 +65,8 @@ const ToolBar: React.FC<ToolBarProps> = ({ setShowGrid, onInsertLink, graphEdito
         </div>
       </Tooltip>
       <Divider type="vertical" />
-      {/* <span style={{ marginRight: 8 }}>显示网格</span>
-      <Switch checked={gridEnabled} onChange={handleGridSwitch} /> */}
+      <span style={{ marginRight: 8 }}>显示网格</span>
+      <Switch checked={gridEnabled} onChange={handleGridSwitch} />
     </div>
   );
 };

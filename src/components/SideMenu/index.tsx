@@ -25,7 +25,6 @@ const SideMenu: React.FC = () => {
     const iconId = uuidv4();
     e.dataTransfer.setData('iconId', iconId);
     e.dataTransfer.setData('iconType', shape.key);
-    e.dataTransfer.setData('iconSvg', shape.svg);
     e.currentTarget.style.cursor = 'grabbing';
   };
 
@@ -147,4 +146,3 @@ const SideMenu: React.FC = () => {
 };
 
 export default SideMenu;
-

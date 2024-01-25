@@ -1,8 +1,12 @@
 // components/Canvas.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 // import GraphEditor, { GraphEditorRef } from '../GraphEditor';
-import GraphEditor, { GraphEditorRef } from '../GraphEditor/mxgraph.tsx';
+import GraphEditor from '../GraphEditor/mxgraph.tsx';
+import styles from "./index.module.scss";
+import classnames from "classnames/bind";
+const classNames = classnames.bind(styles);
 
 interface CanvasProps {
   showGrid: boolean;
@@ -10,17 +14,14 @@ interface CanvasProps {
 }
 
 const Canvas: React.FC<CanvasProps> = ({ showGrid, graphEditorRef }) => {
+  const gridLayout = useSelector((state: any) => state.gridLayout.gridLayout)
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement> | any) => {
     e.preventDefault();
     const iconId = e.dataTransfer.getData('iconId');
     const iconType = e.dataTransfer.getData('iconType');
-    const iconSvg = e.dataTransfer.getData('iconSvg');
     const offsetX = e.clientX;
     const offsetY = e.clientY;
-
-    // console.log("iconId", iconId)
-    // console.log("iconSvg", iconSvg)
-    // console.log("iconType", iconType)
   
     if (graphEditorRef.current) {
       // 设置默认宽度为2（如果是直线的话）
@@ -28,20 +29,22 @@ const Canvas: React.FC<CanvasProps> = ({ showGrid, graphEditorRef }) => {
       const defaultHeigt = iconType.toLowerCase() === 'line' ? 2 : 30;
       const defaultAngle = iconType.toLowerCase() === 'line' ? 30 : 0;
 
-      graphEditorRef.current.addNode(iconType, uuidv4(), offsetX, offsetY, defaultWidth, defaultHeigt, defaultAngle, iconSvg);
+      graphEditorRef.current.addNode(uuidv4(), iconType, offsetX, offsetY);
     }
   };
 
   return (
     <div
+      className={classNames({ container: gridLayout, 'container-without': !gridLayout })}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
-      style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}
+      style={{ width: '100%', height: '800px', display: 'flex', flexDirection: 'column' }}
     >
       {/* 传递 graphEditorRef 到 GraphEditor 组件 */}
-      <GraphEditor ref={graphEditorRef} showGrid={showGrid}  />
+      <GraphEditor ref={graphEditorRef}  />
     </div>
   );
 };
 
 export default Canvas;
+

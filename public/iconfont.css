@@ -1,18 +1,18 @@
 @font-face {
   font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1705982593486') format('truetype');
+  src: url('./iconfont.ttf?t=1706081457043') format('truetype');
 }
 
 .iconfont {
   font-family: "iconfont" !important;
-  font-size: 24px;
+  font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-yuanxingweixuanzhong:before {
-  content: "\e72f";
+.icon-touxiang:before {
+  content: "\e655";
 }
 
 .icon-one-line-arrow:before {
@@ -23,51 +23,87 @@
   content: "\e635";
 }
 
+.icon-line:before {
+  content: "\e653";
+}
+
 .icon-icon-yuanzhuti:before {
   content: "\e617";
 }
 
-.icon-xingzhuang-sanjiaoxing:before {
-  content: "\eb99";
+.icon-cloud:before {
+  content: "\e7d9";
 }
 
-.icon-juxing:before {
-  content: "\e790";
+.icon-hexagon:before {
+  content: "\e7a0";
 }
 
-.icon-24gl-square:before {
-  content: "\ea98";
+.icon-diamond:before {
+  content: "\e801";
 }
 
-.icon-tuoyuan:before {
-  content: "\e610";
+.icon-circle:before {
+  content: "\e615";
 }
 
-.icon-lingxing:before {
-  content: "\e659";
+.icon-square:before {
+  content: "\e62a";
 }
 
-.icon-tixing:before {
-  content: "\e70b";
+.icon-container:before {
+  content: "\e6e8";
 }
 
-.icon-juxing1604:before {
-  content: "\e628";
+.icon-cube:before {
+  content: "\e812";
 }
 
-.icon-uniC401:before {
-  content: "\e60d";
+.icon-rectangle:before {
+  content: "\e88e";
 }
 
-.icon-yuanjiaojuxing:before {
-  content: "\e6b4";
+.icon-dashed-line:before {
+  content: "\e64a";
 }
 
-.icon-xuxian:before {
-  content: "\e6f1";
+.icon-lashen:before {
+  content: "\e645";
 }
 
-.icon-quxian:before {
-  content: "\e8c9";
+.icon-ellipse:before {
+  content: "\e7b8";
+}
+
+.icon-right-triangle:before {
+  content: "\e7c4";
+}
+
+.icon-basepermissionapproveProcess:before {
+  content: "\e636";
+}
+
+.icon-toolbar_icon_jiantou:before {
+  content: "\e61d";
+}
+
+.icon-line-dotted:before {
+  content: "\eccc";
+}
+
+.icon-TiDB:before {
+  content: "\e654";
+}
+
+.icon-wenzi:before {
+  content: "\e9f5";
+}
+
+.icon-trapezoid:before {
+  content: "\e68f";
+}
+
+.icon-textedit_curve:before {
+  content: "\e838";
 }
 
