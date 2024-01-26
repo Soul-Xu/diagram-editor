@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import mx from 'mxgraph';
 import { useSelector } from 'react-redux';
+import { Button } from 'antd';
 // import CustomShapes from './customShapes'
 
 const mxgraph = mx({
@@ -154,48 +155,6 @@ CustomTrapzoidShape.prototype.paintVertexShape = function(c, x, y, w, h) {
   c.fillAndStroke();
 };
 
-// // 自定义 "direct-arrow" 形状
-// function CustomDirectArrowShape(bounds, fill, stroke, strokewidth) {
-//   mxgraph.mxShape.call(this, bounds, fill, stroke, strokewidth);
-// }
-
-// mxUtils.extend(CustomDirectArrowShape, mxgraph.mxShape);
-
-// // 重写绘制箭头直线的方法
-// CustomDirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
-//   // 计算箭头直线的长度
-//   var arrowLineLength = w;
-
-//   // 计算箭头直线的起始点和结束点
-//   var arrowLineStartX = x;
-//   var arrowLineEndX = x + arrowLineLength;
-
-//   // 计算箭头位置（正方形右上角）
-//   var arrowEndX = x + w;
-//   var arrowEndY = y;
-
-//   // 绘制箭头直线
-//   c.begin();
-//   c.moveTo(arrowLineStartX, arrowEndY);
-//   c.lineTo(arrowLineEndX, arrowEndY);
-//   c.stroke();
-
-//   // 绘制实心箭头
-//   var arrowSize = 10;
-//   c.begin();
-//   c.moveTo(arrowLineEndX - arrowSize, arrowEndY - arrowSize);
-//   c.lineTo(arrowLineEndX, arrowEndY);
-//   c.lineTo(arrowLineEndX - arrowSize, arrowEndY + arrowSize);
-//   c.close();
-//   c.fillAndStroke();
-
-//   // 调整边界
-//   this.bounds = new mxgraph.mxRectangle(x, y, arrowLineLength, 0); // 使用固定高度值
-// };
-
-// // 注册自定义形状
-// mxgraph.mxCellRenderer.registerShape('direct-arrow', CustomDirectArrowShape);
-
 // 自定义 "direct-arrow" 形状
 function CustomDirectArrowShape(bounds, fill, stroke, strokewidth) {
   mxgraph.mxShape.call(this, bounds, fill, stroke, strokewidth);
@@ -232,6 +191,52 @@ CustomDirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
   c.fillAndStroke();
 };
 
+// 自定义 "bidirect-arrow-line" 形状
+function CustomBidirectArrowShape(bounds, fill, stroke, strokewidth) {
+  mxgraph.mxShape.call(this, bounds, fill, stroke, strokewidth);
+}
+
+mxUtils.extend(CustomBidirectArrowShape, mxgraph.mxShape);
+
+// 重写绘制双向箭头直线的方法
+CustomBidirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
+  // 计算箭头直线的长度
+  var arrowLineLength = w;
+
+  // 计算箭头直线的起始点和结束点
+  var arrowLineStartX = x;
+  var arrowLineEndX = x + arrowLineLength;
+
+  // 计算箭头位置（正方形右上角）
+  var arrowEndX = x + w;
+  var arrowEndY = y;
+
+  // 绘制箭头直线
+  c.begin();
+  c.moveTo(arrowLineStartX, arrowEndY);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.stroke();
+
+  // 绘制实心箭头
+  var arrowSize = 10;
+  c.begin();
+  c.moveTo(arrowLineEndX - arrowSize, arrowEndY - arrowSize);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.lineTo(arrowLineEndX - arrowSize, arrowEndY + arrowSize);
+  c.close();
+  c.fillAndStroke();
+
+  // 绘制反方向的箭头
+  c.begin();
+  c.moveTo(arrowLineStartX + arrowSize, arrowEndY - arrowSize);
+  c.lineTo(arrowLineStartX, arrowEndY);
+  c.lineTo(arrowLineStartX + arrowSize, arrowEndY + arrowSize);
+  c.close();
+  c.fillAndStroke();
+
+  // 调整边界
+  this.bounds = new mxgraph.mxRectangle(x, y, arrowLineLength, 0); // 使用固定高度值
+};
 
 // 注册自定义形状
 mxgraph.mxCellRenderer.registerShape('actor', CustomActorShape);
@@ -241,6 +246,7 @@ mxgraph.mxCellRenderer.registerShape('square', CustomSquareShape);
 mxgraph.mxCellRenderer.registerShape('diamond', CustomDiamondShape);
 mxgraph.mxCellRenderer.registerShape('trapzoid', CustomTrapzoidShape);
 mxgraph.mxCellRenderer.registerShape('direct-arrow', CustomDirectArrowShape);
+mxgraph.mxCellRenderer.registerShape('bidrect-arrow', CustomBidirectArrowShape);
 
 const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
   const graphContainerRef = useRef<any>(null);
@@ -331,9 +337,6 @@ const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
             case 'bidrect-arrow':
               style = 'shape=bidrect-arrow;';
               break;
-            case 'bidirect-arrow-line':
-              style = 'shape=bidirect-arrow-line;';
-              break;
             case 'dashed-line':
               style = 'shape=dashed-line;';
               break;
@@ -387,16 +390,96 @@ const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
           // 设置画布高度为固定值
           const fixedCanvasHeightDefault = 800; // 默认的固定高度
           graphContainerRef.current.style.height = `${fixedCanvasHeightDefault}px`;
-        }
+        },
+        // 新增保存和加载的方法
+        saveGraph,
+        loadGraph,
       }
     }
   }, [ref]);
 
+
+  const saveGraph = () => {
+    const encoder = new mxgraph.mxCodec();
+    const node = encoder.encode(graphRef.current.getModel());
+    const xml = mxgraph.mxUtils.getXml(node);
+  
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    const cells = doc.getElementsByTagName('mxCell');
+  
+    const jsonData = Array.from(cells).map(cell => {
+      const id = cell.getAttribute('id');
+      const geometryNode = cell.getElementsByTagName('mxGeometry')[0];
+      const x = geometryNode ? geometryNode.getAttribute('x') : '';
+      const y = geometryNode ? geometryNode.getAttribute('y') : '';
+      const width = geometryNode ? geometryNode.getAttribute('width') : '';
+      const height = geometryNode ? geometryNode.getAttribute('height') : '';
+  
+      let label = '';
+      const valueNode = cell.getElementsByTagName('mxValue');
+      if (valueNode.length > 0 && valueNode[0].hasAttribute('value')) {
+        label = valueNode[0].getAttribute('value');
+      }
+  
+      // 其他属性
+      const customAttributes = Array.from(cell.attributes).reduce((attrs, attr) => {
+        if (!['id', 'style'].includes(attr.name)) {
+          attrs[attr.name] = attr.value;
+        }
+        return attrs;
+      }, {});
+  
+      return {
+        id: id,
+        label: label,
+        x: x,
+        y: y,
+        width: width,
+        height: height,
+        ...customAttributes,
+      };
+    });
+  
+    console.log("saveGraph", jsonData);
+  };
+  
+  
+
+
+  const loadGraph = () => {
+    const savedGraphData = localStorage.getItem('savedGraphData');
+    if (savedGraphData) {
+      if (graphRef.current) {
+        graphRef.current.getModel().beginUpdate();
+        try {
+          // 清空当前图形
+          graphRef.current.removeCells(graphRef.current.getChildVertices(graphRef.current.getDefaultParent()), true);
+
+          // 解析并加载保存的图形数据
+          const doc = mxgraph.mxUtils.parseXml(savedGraphData);
+          const codec = new mxgraph.mxCodec(doc);
+          codec.decode(doc.documentElement, graphRef.current.getModel());
+        } finally {
+          graphRef.current.getModel().endUpdate();
+        }
+
+        console.log('Graph Data loaded from localStorage');
+      }
+    } else {
+      console.log('No saved graph data found in localStorage');
+    }
+  };
+
+
   return (
-    <div
-      ref={graphContainerRef}
-      style={{ height: '100%', position: 'relative' }}
-    />
+    <div>
+      <Button onClick={saveGraph}>保存</Button>
+      {/* <Button onClick={() => loadGraph(savedXmlData)}>加载</Button> */}
+      <div
+        ref={graphContainerRef}
+        style={{ height: '100%', position: 'relative' }}
+      />
+    </div>
   );
 });
 

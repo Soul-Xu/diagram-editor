@@ -69,16 +69,16 @@ export const SIDEBAR_BASIC_SHAPES = [
     key: "bidrect-arrow",
     iconCode: "&#xe645;",
   },
-  {
-    name: "单向直线",
-    key: "direct-arrow-line",
-    iconCode: "&#xe61c;",
-  },
-  {
-    name: "双向直线",
-    key: "bidirect-arrow-line",
-    iconCode: "&#xe635;",
-  },
+  // {
+  //   name: "单向直线",
+  //   key: "direct-arrow-line",
+  //   iconCode: "&#xe61c;",
+  // },
+  // {
+  //   name: "双向直线",
+  //   key: "bidirect-arrow-line",
+  //   iconCode: "&#xe635;",
+  // },
   {
     name: "虚线",
     key: "dashed-line",
