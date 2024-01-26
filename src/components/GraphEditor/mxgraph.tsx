@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import mx from 'mxgraph';
 import { useSelector } from 'react-redux';
+// import CustomShapes from './customShapes'
 
 const mxgraph = mx({
   mxBasePath: 'mxgraph',
@@ -12,18 +13,7 @@ const COLORS = {
   grid: '#a1bbce',
 };
 
-const { mxUtils } = mxgraph;
-
-// 自定义 "curve" 形状
-mxgraph.mxShape.prototype.paintVertexShape = function(c, x, y, w, h) {
-  c.begin();
-  c.moveTo(x, y);
-  c.lineTo(x + w, y);
-  c.lineTo(x + w, y + h);
-  c.lineTo(x, y + h);
-  c.close();
-  c.stroke();
-};
+const { mxEvent, mxUtils, mxPoint } = mxgraph;
 
 // 自定义 "actor" 形状
 function CustomActorShape(bounds, fill, stroke, strokewidth) {
@@ -164,34 +154,99 @@ CustomTrapzoidShape.prototype.paintVertexShape = function(c, x, y, w, h) {
   c.fillAndStroke();
 };
 
+// // 自定义 "direct-arrow" 形状
+// function CustomDirectArrowShape(bounds, fill, stroke, strokewidth) {
+//   mxgraph.mxShape.call(this, bounds, fill, stroke, strokewidth);
+// }
+
+// mxUtils.extend(CustomDirectArrowShape, mxgraph.mxShape);
+
+// // 重写绘制箭头直线的方法
+// CustomDirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
+//   // 计算箭头直线的长度
+//   var arrowLineLength = w;
+
+//   // 计算箭头直线的起始点和结束点
+//   var arrowLineStartX = x;
+//   var arrowLineEndX = x + arrowLineLength;
+
+//   // 计算箭头位置（正方形右上角）
+//   var arrowEndX = x + w;
+//   var arrowEndY = y;
+
+//   // 绘制箭头直线
+//   c.begin();
+//   c.moveTo(arrowLineStartX, arrowEndY);
+//   c.lineTo(arrowLineEndX, arrowEndY);
+//   c.stroke();
+
+//   // 绘制实心箭头
+//   var arrowSize = 10;
+//   c.begin();
+//   c.moveTo(arrowLineEndX - arrowSize, arrowEndY - arrowSize);
+//   c.lineTo(arrowLineEndX, arrowEndY);
+//   c.lineTo(arrowLineEndX - arrowSize, arrowEndY + arrowSize);
+//   c.close();
+//   c.fillAndStroke();
+
+//   // 调整边界
+//   this.bounds = new mxgraph.mxRectangle(x, y, arrowLineLength, 0); // 使用固定高度值
+// };
+
+// // 注册自定义形状
+// mxgraph.mxCellRenderer.registerShape('direct-arrow', CustomDirectArrowShape);
+
 // 自定义 "direct-arrow" 形状
 function CustomDirectArrowShape(bounds, fill, stroke, strokewidth) {
-  mxgraph.mxArrow.call(this, bounds, fill, stroke, strokewidth, null, null, null, null);
+  mxgraph.mxShape.call(this, bounds, fill, stroke, strokewidth);
 }
 
-mxUtils.extend(CustomDirectArrowShape, mxgraph.mxArrow);
+mxUtils.extend(CustomDirectArrowShape, mxgraph.mxShape);
 
-// 注册自定义形状
-mxgraph.mxCellRenderer.registerShape('trapzoid', CustomTrapzoidShape);
+// 重写绘制箭头直线的方法
+CustomDirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
+  // 计算箭头直线的长度
+  var arrowLineLength = w;
 
+  // 计算箭头直线的起始点和结束点
+  var arrowLineStartX = x;
+  var arrowLineEndX = x + arrowLineLength;
 
-// 注册自定义形状
-mxgraph.mxCellRenderer.registerShape('diamond', CustomDiamondShape);
+  // 计算箭头位置（正方形右上角）
+  var arrowEndX = x + w;
+  var arrowEndY = y;
 
+  // 绘制箭头直线
+  c.begin();
+  c.moveTo(arrowLineStartX, arrowEndY);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.stroke();
 
-// 注册自定义形状
-mxgraph.mxCellRenderer.registerShape('circle', CustomCircleShape);
-mxgraph.mxCellRenderer.registerShape('square', CustomSquareShape);
+  // 绘制实心箭头
+  var arrowSize = 10;
+  c.begin();
+  c.moveTo(arrowLineEndX - arrowSize, arrowEndY - arrowSize);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.lineTo(arrowLineEndX - arrowSize, arrowEndY + arrowSize);
+  c.close();
+  c.fillAndStroke();
+};
+
 
 // 注册自定义形状
 mxgraph.mxCellRenderer.registerShape('actor', CustomActorShape);
 mxgraph.mxCellRenderer.registerShape('rectangle', CustomRectangleShape);
+mxgraph.mxCellRenderer.registerShape('circle', CustomCircleShape);
+mxgraph.mxCellRenderer.registerShape('square', CustomSquareShape);
+mxgraph.mxCellRenderer.registerShape('diamond', CustomDiamondShape);
+mxgraph.mxCellRenderer.registerShape('trapzoid', CustomTrapzoidShape);
+mxgraph.mxCellRenderer.registerShape('direct-arrow', CustomDirectArrowShape);
 
-const GraphEditor = forwardRef(({ showGrid }, ref) => {
+const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
   const graphContainerRef = useRef<any>(null);
-  const graphRef = useRef(null);
+  const graphRef = useRef<any>(null);
   const [nodes, setNodes] = useState([]);
-  const linkColor = useSelector((state) => state.graphEditor.linkColor);
+  const linkColor = useSelector((state:any) => state.graphEditor.linkColor);
 
   useEffect(() => {
     if (graphContainerRef.current) {
@@ -200,7 +255,7 @@ const GraphEditor = forwardRef(({ showGrid }, ref) => {
       graph.gridEnabled = true;
       graph.view.gridColor = COLORS.grid;
       graphRef.current = graph;
-
+      
       // 重写 resizeVertex 方法
       mxgraph.mxGraph.prototype.resizeVertex = function (vertex, bounds, recurse) {
         var geo = this.model.getGeometry(vertex);
@@ -271,8 +326,8 @@ const GraphEditor = forwardRef(({ showGrid }, ref) => {
               style = 'shape=data-storage;';
               break;
             case 'direct-arrow':
-              style = 'shape=direct-arrow;';
-              break;
+                style = 'shape=direct-arrow;perimeter=directArrowPerimeter;';
+                break;
             case 'bidrect-arrow':
               style = 'shape=bidrect-arrow;';
               break;
@@ -298,12 +353,11 @@ const GraphEditor = forwardRef(({ showGrid }, ref) => {
               style = 'shape=rectangle;'; // 默认为矩形
               break;
           } 
-        
-          // 插入形状
-          // @ts-ignore
+
           graphRef.current.model.beginUpdate();
           try {
-            const vertex = graphRef.current?.insertVertex(
+            const arrowWidth = 0.5; // 箭头的宽度，你可以根据需要调整
+            const vertex = iconType !== "direct-arrow" ? graphRef.current?.insertVertex(
               graphRef.current?.getDefaultParent(),
               iconId,
               '',
@@ -312,21 +366,29 @@ const GraphEditor = forwardRef(({ showGrid }, ref) => {
               80,
               80,
               style
+            ) : graphRef.current?.insertVertex(
+              graphRef.current?.getDefaultParent(),
+              iconId,
+              '',
+              x,
+              y,
+              100,
+              arrowWidth,
+              // arrowHeight,
+              style
             );
-        
+
             // 更新节点列表
-            // @ts-ignore
-            setNodes((prevNodes:any) => [...prevNodes, vertex]);
+            setNodes((prevNodes) => [...prevNodes, vertex]);
           } finally {
-            // @ts-ignore
             graphRef.current?.model?.endUpdate();
           }
 
           // 设置画布高度为固定值
-          const fixedCanvasHeight = 800; // 你想要的固定高度
-          graphContainerRef.current.style.height = `${fixedCanvasHeight}px`;
-        },
-      };
+          const fixedCanvasHeightDefault = 800; // 默认的固定高度
+          graphContainerRef.current.style.height = `${fixedCanvasHeightDefault}px`;
+        }
+      }
     }
   }, [ref]);
 
