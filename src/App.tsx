@@ -22,9 +22,9 @@ const App = () => {
       <Header style={{ backgroundColor: "#fff", height: "40px", lineHeight: "40px" }}>
         <MenuBar />
       </Header>
-      <div style={{ height: "30px", lineHeight: "30px", borderBottom: "1px solid #eee", padding: "0 50px" }}>
+      {/* <div style={{ height: "30px", lineHeight: "30px", borderBottom: "1px solid #eee", padding: "0 50px" }}>
         <Toolbar setShowGrid={setShowGrid} onInsertLink={() => {}} graphEditorRef={graphEditorRef} />
-      </div>
+      </div> */}
       <Layout style={{ display: "flex" }}>
         <SideMenu />
         <Canvas showGrid={showGrid} graphEditorRef={graphEditorRef} />

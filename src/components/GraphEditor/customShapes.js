@@ -1,13 +1,19 @@
 "use strict";
 import mx from 'mxgraph';
 
+console.log('customShapes.js is loaded');
+
 const mxgraph = mx({
   mxBasePath: 'mxgraph',
   mxLoadResources: false,
   mxLoadStylesheets: false,
 });
 
-const { mxUtils } = mxgraph;
+const COLORS = {
+  grid: '#a1bbce',
+};
+
+const { mxEvent, mxUtils, mxPoint } = mxgraph;
 
 // 自定义 "actor" 形状
 function CustomActorShape(bounds, fill, stroke, strokewidth) {
@@ -148,14 +154,124 @@ CustomTrapzoidShape.prototype.paintVertexShape = function(c, x, y, w, h) {
   c.fillAndStroke();
 };
 
+// 自定义 "direct-arrow" 形状
+function CustomDirectArrowShape(bounds, fill, stroke, strokewidth) {
+  mxgraph.mxShape.call(this, bounds, fill, stroke, strokewidth);
+}
+
+mxUtils.extend(CustomDirectArrowShape, mxgraph.mxShape);
+
+// 重写绘制箭头直线的方法
+CustomDirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
+  // 计算箭头直线的长度
+  var arrowLineLength = w;
+
+  // 计算箭头直线的起始点和结束点
+  var arrowLineStartX = x;
+  var arrowLineEndX = x + arrowLineLength;
+
+  // 计算箭头位置（正方形右上角）
+  var arrowEndX = x + w;
+  var arrowEndY = y;
+
+  // 绘制箭头直线
+  c.begin();
+  c.moveTo(arrowLineStartX, arrowEndY);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.stroke();
+
+  // 绘制实心箭头
+  var arrowSize = 10;
+  c.begin();
+  c.moveTo(arrowLineEndX - arrowSize, arrowEndY - arrowSize);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.lineTo(arrowLineEndX - arrowSize, arrowEndY + arrowSize);
+  c.close();
+  c.fillAndStroke();
+};
+
+// 自定义 "bidirect-arrow-line" 形状
+function CustomBidirectArrowShape(bounds, fill, stroke, strokewidth) {
+  mxgraph.mxShape.call(this, bounds, fill, stroke, strokewidth);
+}
+
+mxUtils.extend(CustomBidirectArrowShape, mxgraph.mxShape);
+
+// 重写绘制双向箭头直线的方法
+CustomBidirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
+  // 计算箭头直线的长度
+  var arrowLineLength = w;
+
+  // 计算箭头直线的起始点和结束点
+  var arrowLineStartX = x;
+  var arrowLineEndX = x + arrowLineLength;
+
+  // 计算箭头位置（正方形右上角）
+  var arrowEndX = x + w;
+  var arrowEndY = y;
+
+  // 绘制箭头直线
+  c.begin();
+  c.moveTo(arrowLineStartX, arrowEndY);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.stroke();
+
+  // 绘制实心箭头
+  var arrowSize = 10;
+  c.begin();
+  c.moveTo(arrowLineEndX - arrowSize, arrowEndY - arrowSize);
+  c.lineTo(arrowLineEndX, arrowEndY);
+  c.lineTo(arrowLineEndX - arrowSize, arrowEndY + arrowSize);
+  c.close();
+  c.fillAndStroke();
+
+  // 绘制反方向的箭头
+  c.begin();
+  c.moveTo(arrowLineStartX + arrowSize, arrowEndY - arrowSize);
+  c.lineTo(arrowLineStartX, arrowEndY);
+  c.lineTo(arrowLineStartX + arrowSize, arrowEndY + arrowSize);
+  c.close();
+  c.fillAndStroke();
+
+  // 调整边界
+  this.bounds = new mxgraph.mxRectangle(x, y, arrowLineLength, 0); // 使用固定高度值
+};
+
+// 自定义直线形状
+function CustomLineShape(bounds, fill, stroke, strokewidth) {
+  mxgraph.mxConnector.call(this, bounds, fill, stroke, strokewidth);
+}
+
+mxUtils.extend(CustomLineShape, mxgraph.mxConnector);
+
+// 重写绘制直线的方法
+CustomLineShape.prototype.paintEdgeShape = function(c, pts) {
+  c.begin();
+  c.moveTo(pts[0].x, pts[0].y);
+  c.lineTo(pts[1].x, pts[1].y);
+  c.stroke();
+};
+
 // 注册自定义形状
 mxgraph.mxCellRenderer.registerShape('actor', CustomActorShape);
 mxgraph.mxCellRenderer.registerShape('rectangle', CustomRectangleShape);
-mxgraph.mxCellRenderer.registerShape('square', CustomSquareShape);
 mxgraph.mxCellRenderer.registerShape('circle', CustomCircleShape);
+mxgraph.mxCellRenderer.registerShape('square', CustomSquareShape);
 mxgraph.mxCellRenderer.registerShape('diamond', CustomDiamondShape);
 mxgraph.mxCellRenderer.registerShape('trapzoid', CustomTrapzoidShape);
+mxgraph.mxCellRenderer.registerShape('direct-arrow', CustomDirectArrowShape);
+mxgraph.mxCellRenderer.registerShape('bidrect-arrow', CustomBidirectArrowShape);
+mxgraph.mxCellRenderer.registerShape('line', CustomLineShape);
 
-const CustomShapes = {
-  
-}
+// 导出自定义形状
+export { 
+  CustomActorShape,
+  CustomRectangleShape,
+  CustomCircleShape,
+  CustomSquareShape,
+  CustomDiamondShape,
+  CustomTrapzoidShape,
+  CustomDirectArrowShape,
+  CustomBidirectArrowShape,
+  CustomLineShape
+};

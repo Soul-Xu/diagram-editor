@@ -4,11 +4,11 @@ export var SIDEBAR_BASIC_SHAPES = [
         key: "rectangle",
         iconCode: "&#xe88e;"
     },
-    {
-        name: "文字",
-        key: "text",
-        iconCode: "&#xe9f5;"
-    },
+    // {
+    //   name: "文字",
+    //   key: "text",
+    //   iconCode: `&#xe9f5;`,
+    // },
     {
         name: "椭圆",
         key: "ellipse",
@@ -79,26 +79,26 @@ export var SIDEBAR_BASIC_SHAPES = [
     //   key: "bidirect-arrow-line",
     //   iconCode: "&#xe635;",
     // },
-    {
-        name: "虚线",
-        key: "dashed-line",
-        iconCode: "&#xe64a;"
-    },
-    {
-        name: "点线",
-        key: "dotted-line",
-        iconCode: "&#xeccc;"
-    },
+    // {
+    //   name: "虚线",
+    //   key: "dashed-line",
+    //   iconCode: "&#xe64a;",
+    // },
+    // {
+    //   name: "点线",
+    //   key: "dotted-line",
+    //   iconCode: "&#xeccc;",
+    // },
     {
         name: "直线",
         key: "line",
         iconCode: "&#xe653;"
     },
-    {
-        name: "曲线",
-        key: "curve",
-        iconCode: "&#xe838;"
-    },
+    // {
+    //   name: "曲线",
+    //   key: "curve",
+    //   iconCode: "&#xe838;",
+    // },
     {
         name: "头像",
         key: "actor",

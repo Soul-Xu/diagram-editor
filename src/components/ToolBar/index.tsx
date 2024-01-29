@@ -18,7 +18,7 @@ interface ToolBarProps {
   graphEditorRef: React.RefObject<GraphEditorRef | null>;
 }
 
-const ToolBar: React.FC<ToolBarProps> = ({ setShowGrid, onInsertLink, graphEditorRef }) => {
+const ToolBar: React.FC<ToolBarProps> = ({ onSave, onLoad, onInsertLink }:any) => {
   const dispatch = useDispatch()
   const [gridEnabled, setGridEnabled] = useState(true);
   const buttonStyle = { marginRight: '0' };
@@ -48,11 +48,11 @@ const ToolBar: React.FC<ToolBarProps> = ({ setShowGrid, onInsertLink, graphEdito
   return (
     <div className={classNames("container")}>
       <Tooltip title="新建">
-        <Button icon={<PlusOutlined />} type='text' onClick={handleNewCanvas} style={buttonStyle} className="icon-button" />
+        <Button icon={<PlusOutlined />} type="text" onClick={onInsertLink} />
       </Tooltip>
       <Divider type="vertical" />
       <Tooltip title="保存">
-        <Button icon={<SaveOutlined />} type='text' onClick={handleSave} style={buttonStyle} className="icon-button" />
+        <Button icon={<SaveOutlined />} type="text" onClick={onSave} />
       </Tooltip>
       <Divider type="vertical" />
       <Tooltip title="撤销">
@@ -65,8 +65,10 @@ const ToolBar: React.FC<ToolBarProps> = ({ setShowGrid, onInsertLink, graphEdito
         </div>
       </Tooltip>
       <Divider type="vertical" />
-      <span style={{ marginRight: 8 }}>显示网格</span>
-      <Switch checked={gridEnabled} onChange={handleGridSwitch} />
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <span style={{ marginRight: 8 }}>显示网格</span>
+        <Switch checked={gridEnabled} onChange={handleGridSwitch} />
+      </div>
     </div>
   );
 };

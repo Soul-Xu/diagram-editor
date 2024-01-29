@@ -2,7 +2,9 @@ import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import mx from 'mxgraph';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
-// import CustomShapes from './customShapes'
+import ToolBar from '../ToolBar';
+import SaveCanvasModal from './saveModal';
+import './customShapes.js'
 
 const mxgraph = mx({
   mxBasePath: 'mxgraph',
@@ -238,6 +240,21 @@ CustomBidirectArrowShape.prototype.paintVertexShape = function(c, x, y, w, h) {
   this.bounds = new mxgraph.mxRectangle(x, y, arrowLineLength, 0); // 使用固定高度值
 };
 
+// 自定义直线形状
+function CustomLineShape(bounds, fill, stroke, strokewidth) {
+  mxgraph.mxConnector.call(this, bounds, fill, stroke, strokewidth);
+}
+
+mxUtils.extend(CustomLineShape, mxgraph.mxConnector);
+
+// 重写绘制直线的方法
+CustomLineShape.prototype.paintEdgeShape = function(c, pts) {
+  c.begin();
+  c.moveTo(pts[0].x, pts[0].y);
+  c.lineTo(pts[1].x, pts[1].y);
+  c.stroke();
+};
+
 // 注册自定义形状
 mxgraph.mxCellRenderer.registerShape('actor', CustomActorShape);
 mxgraph.mxCellRenderer.registerShape('rectangle', CustomRectangleShape);
@@ -247,12 +264,17 @@ mxgraph.mxCellRenderer.registerShape('diamond', CustomDiamondShape);
 mxgraph.mxCellRenderer.registerShape('trapzoid', CustomTrapzoidShape);
 mxgraph.mxCellRenderer.registerShape('direct-arrow', CustomDirectArrowShape);
 mxgraph.mxCellRenderer.registerShape('bidrect-arrow', CustomBidirectArrowShape);
+mxgraph.mxCellRenderer.registerShape('line', CustomLineShape);
 
-const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
+// Define a variable to store the source cell when creating connections
+let sourceCell = null;
+
+const GraphEditor = forwardRef(({ showGrid }:any, ref:any) => {
   const graphContainerRef = useRef<any>(null);
   const graphRef = useRef<any>(null);
   const [nodes, setNodes] = useState([]);
   const linkColor = useSelector((state:any) => state.graphEditor.linkColor);
+  const [showSaveModal, setShowSaveModal] = useState(false)
 
   useEffect(() => {
     if (graphContainerRef.current) {
@@ -260,29 +282,18 @@ const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
       graph.gridSize = 10;
       graph.gridEnabled = true;
       graph.view.gridColor = COLORS.grid;
+  
       graphRef.current = graph;
-      
-      // 重写 resizeVertex 方法
-      mxgraph.mxGraph.prototype.resizeVertex = function (vertex, bounds, recurse) {
-        var geo = this.model.getGeometry(vertex);
-        var isCircle = geo.style && geo.style.includes('shape=circle;');
-        var isSquare = geo.style && geo.style.includes('shape=square;');
-  
-        if (isCircle || isSquare) {
-          var maxSide = Math.max(bounds.width, bounds.height);
-          bounds.width = maxSide;
-          bounds.height = maxSide;
-          geo.width = bounds.width;
-          geo.height = bounds.height;
-        }
-  
-        mxgraph.mxGraph.prototype.resizeVertex.apply(this, arguments);
-      };
   
       graph.getCellStyle = function (cell) {
-        const style = mxgraph.mxGraph.prototype.getCellStyle.apply(this, arguments);
+        const style = mxgraph.mxGraph.prototype.getCellStyle?.apply(
+          this,
+          arguments
+        );
         return style;
       };
+      
+      graph.setConnectable = true
     }
   }, []);
 
@@ -304,8 +315,8 @@ const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
             case 'ellipse':
               style = 'shape=ellipse;';
               break;
-            case 'sequare':
-              style = 'shape=sequare;resizable=1;';
+            case 'square':
+              style = 'shape=square;resizable=1;';
               break;
             case 'triangle':
               style = 'shape=triangle;';
@@ -337,18 +348,13 @@ const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
             case 'bidrect-arrow':
               style = 'shape=bidrect-arrow;';
               break;
-            case 'dashed-line':
-              style = 'shape=dashed-line;';
-              break;
-            case 'dotted-line':
-              style = 'shape=dotted-line;';
-              break;
             case 'line':
               style = 'shape=line;';
               break;
-            case 'curve':
-              style = 'shape=curve;';
-              break;
+            // case 'curve':
+            //   console.log("shape", iconType)
+            //   style = 'shape=custom-curve;';
+            //   break;
             case 'actor':
               style = 'shape=actor;';
               break;
@@ -360,7 +366,7 @@ const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
           graphRef.current.model.beginUpdate();
           try {
             const arrowWidth = 0.5; // 箭头的宽度，你可以根据需要调整
-            const vertex = iconType !== "direct-arrow" ? graphRef.current?.insertVertex(
+            const vertex = !(iconType === "direct-arrow" || iconType === "bidirect-arrow") ? graphRef.current?.insertVertex(
               graphRef.current?.getDefaultParent(),
               iconId,
               '',
@@ -391,94 +397,114 @@ const GraphEditor = forwardRef(({ showGrid }:any, ref) => {
           const fixedCanvasHeightDefault = 800; // 默认的固定高度
           graphContainerRef.current.style.height = `${fixedCanvasHeightDefault}px`;
         },
-        // 新增保存和加载的方法
-        saveGraph,
-        loadGraph,
       }
     }
   }, [ref]);
 
+  const onShowSaveModal = () => {
+    setShowSaveModal(true)
+  }
 
-  const saveGraph = () => {
+  const handleSave = () => {
     const encoder = new mxgraph.mxCodec();
     const node = encoder.encode(graphRef.current.getModel());
     const xml = mxgraph.mxUtils.getXml(node);
-  
-    const doc = new DOMParser().parseFromString(xml, 'application/xml');
-    const cells = doc.getElementsByTagName('mxCell');
-  
-    const jsonData = Array.from(cells).map(cell => {
-      const id = cell.getAttribute('id');
-      const geometryNode = cell.getElementsByTagName('mxGeometry')[0];
-      const x = geometryNode ? geometryNode.getAttribute('x') : '';
-      const y = geometryNode ? geometryNode.getAttribute('y') : '';
-      const width = geometryNode ? geometryNode.getAttribute('width') : '';
-      const height = geometryNode ? geometryNode.getAttribute('height') : '';
-  
-      let label = '';
-      const valueNode = cell.getElementsByTagName('mxValue');
-      if (valueNode.length > 0 && valueNode[0].hasAttribute('value')) {
-        label = valueNode[0].getAttribute('value');
-      }
-  
-      // 其他属性
-      const customAttributes = Array.from(cell.attributes).reduce((attrs, attr) => {
-        if (!['id', 'style'].includes(attr.name)) {
-          attrs[attr.name] = attr.value;
-        }
-        return attrs;
-      }, {});
-  
-      return {
-        id: id,
-        label: label,
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-        ...customAttributes,
-      };
-    });
-  
-    console.log("saveGraph", jsonData);
+
+    // 保存到本地存储，你也可以将 xml 发送到服务器进行存储
+    localStorage.setItem('savedGraphData', xml);
+    console.log('保存成功', xml);
+    const jsonXml = convertXmlToJson(xml)
+    console.log("JsonXml", jsonXml)
   };
-  
-  
 
-
-  const loadGraph = () => {
+  const handleLoad = () => {
     const savedGraphData = localStorage.getItem('savedGraphData');
-    if (savedGraphData) {
-      if (graphRef.current) {
-        graphRef.current.getModel().beginUpdate();
-        try {
-          // 清空当前图形
-          graphRef.current.removeCells(graphRef.current.getChildVertices(graphRef.current.getDefaultParent()), true);
+    if (savedGraphData && graphRef.current) {
+      graphRef.current.getModel().beginUpdate();
+      try {
+        // 清空当前图形
+        graphRef.current.removeCells(
+          graphRef.current.getChildVertices(
+            graphRef.current.getDefaultParent()
+          ),
+          true
+        );
 
-          // 解析并加载保存的图形数据
-          const doc = mxgraph.mxUtils.parseXml(savedGraphData);
-          const codec = new mxgraph.mxCodec(doc);
-          codec.decode(doc.documentElement, graphRef.current.getModel());
-        } finally {
-          graphRef.current.getModel().endUpdate();
-        }
-
-        console.log('Graph Data loaded from localStorage');
+        // 解析并加载保存的图形数据
+        const doc = mx.mxUtils.parseXml(savedGraphData);
+        const codec = new mx.mxCodec(doc);
+        codec.decode(doc.documentElement, graphRef.current.getModel());
+      } finally {
+        graphRef.current.getModel().endUpdate();
       }
+
+      console.log('Graph Data loaded from localStorage');
     } else {
       console.log('No saved graph data found in localStorage');
     }
   };
 
+  const handleInsertLink = () => {
+    // 处理插入链接的逻辑
+  };
+
+  function convertXmlToJson(xmlString) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+    return xmlToJson(xmlDoc);
+  }
+  
+  const xmlToJson = (xml) => {
+    const obj = {};
+  
+    if (xml.nodeType === 1) {
+      if (xml.attributes.length > 0) {
+        obj['@attributes'] = {};
+        for (let j = 0; j < xml.attributes.length; j++) {
+          const attribute = xml.attributes.item(j);
+          obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
+        }
+      }
+    } else if (xml.nodeType === 3) {
+      obj = xml.nodeValue.trim();
+    }
+  
+    if (xml.hasChildNodes()) {
+      for (let i = 0; i < xml.childNodes.length; i++) {
+        const item = xml.childNodes.item(i);
+        const nodeName = item.nodeName;
+  
+        if (typeof obj[nodeName] === 'undefined') {
+          obj[nodeName] = xmlToJson(item);
+        } else {
+          if (typeof obj[nodeName].push === 'undefined') {
+            const old = obj[nodeName];
+            obj[nodeName] = [];
+            obj[nodeName].push(old);
+          }
+          obj[nodeName].push(xmlToJson(item));
+        }
+      }
+    }
+  
+    return obj;
+  }
 
   return (
     <div>
-      <Button onClick={saveGraph}>保存</Button>
-      {/* <Button onClick={() => loadGraph(savedXmlData)}>加载</Button> */}
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <ToolBar
+          onSave={handleSave}
+          onLoad={handleLoad}
+          onInsertLink={handleInsertLink}
+        />
+        <Button type='text' onClick={onShowSaveModal}>保存</Button>
+      </div>
       <div
         ref={graphContainerRef}
         style={{ height: '100%', position: 'relative' }}
       />
+      <SaveCanvasModal visible={showSaveModal} onCancel={() => setShowSaveModal(false)} onSave={handleSave} />
     </div>
   );
 });
